@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>websocket</title>
+    <script src="https://cdn.bootcss.com/angular.js/1.5.6/angular.min.js"></script>
+    <script src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js"></script>
+    <script src="https://cdn.bootcss.com/stomp.js/2.3.3/stomp.min.js"></script>
+    <script type="text/javascript">
+        /*<![CDATA[*/
+
+        var stompClient = null;
+
+        var app = angular.module('app', []);
+        app.controller('MainController', function ($rootScope, $scope, $http) {
+
+            $scope.data = {
+                //连接状态
+                connected: false,
+                //消息
+                message: '',
+                rows: [],
+                lala: []
+            };
+
+            //连接
+            $scope.connect = function () {
+                var socket = new SockJS('/my-websocket');
+                stompClient = Stomp.over(socket);
+                stompClient.connect({}, function (frame) {
+                    // 注册推送时间回调
+                    stompClient.subscribe('/topic/notification', function (r) {
+                        $scope.data.body = r.body;
+                        $scope.data.connected = true;
+                        $scope.$apply();
+
+                        // 弹窗
+                        if (window.Notification) {
+                            var popNotice = function () {
+                                if (Notification.permission == "granted") {
+                                    var notification = new Notification("Hi，跟你打招呼呢，看着没？：", {
+                                        body: r.body,
+                                    });
+
+                                    notification.onclick = function () {
+                                        notification.close();
+                                    };
+                                }
+                            };
+
+                            if (Notification.permission == "granted") {
+                                popNotice();
+                            } else if (Notification.permission != "denied") {
+                                Notification.requestPermission(function (permission) {
+                                    popNotice();
+                                });
+                            }
+                        } else {
+                            alert('浏览器不支持Notification');
+                        }
+                    });
+
+                    $scope.data.connected = true;
+                    $scope.$apply();
+                });
+            };
+
+            $scope.disconnect = function () {
+                if (stompClient != null) {
+                    stompClient.disconnect();
+                }
+                $scope.data.connected = false;
+            }
+        });
+        /*]]>*/
+    </script>
+</head>
+<body ng-app="app" ng-controller="MainController">
+<label>WebSocket连接状态:</label>
+<button type="button" ng-disabled="data.connected" ng-click="connect()">连接</button>
+<button type="button" ng-click="disconnect()" ng-disabled="!data.connected">断开</button>
+</body>
+</html>

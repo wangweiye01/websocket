@@ -65,4 +65,12 @@ public class App {
         messagingTemplate.convertAndSendToUser("1", "/greetings", message);
         return message;
     }
+
+    @Scheduled(fixedRate = 9000)
+    @SendTo("/topic/notification")
+    public Object notification() {
+        // 发现消息
+        messagingTemplate.convertAndSend("/topic/notification", "hello world!");
+        return "ok";
+    }
 }
