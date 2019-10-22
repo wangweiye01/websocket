@@ -8,8 +8,6 @@
     <script src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js"></script>
     <script src="https://cdn.bootcss.com/stomp.js/2.3.3/stomp.min.js"></script>
     <script type="text/javascript">
-        /*<![CDATA[*/
-
         var stompClient = null;
 
         var app = angular.module('app', []);
@@ -41,6 +39,7 @@
                                 if (Notification.permission == "granted") {
                                     var notification = new Notification("Hi，跟你打招呼呢，看着没？：", {
                                         body: r.body,
+                                        icon: 'https://gttx-pc.oss-cn-beijing.aliyuncs.com/6c603870330d68c8765cc19edaa78dda.jpg'
                                     });
 
                                     notification.onclick = function () {
@@ -50,8 +49,10 @@
                             };
 
                             if (Notification.permission == "granted") {
+                                // 已经授权接受通知
                                 popNotice();
                             } else if (Notification.permission != "denied") {
+                                // 未拒绝接受通知，提示用户授权
                                 Notification.requestPermission(function (permission) {
                                     popNotice();
                                 });
@@ -73,7 +74,6 @@
                 $scope.data.connected = false;
             }
         });
-        /*]]>*/
     </script>
 </head>
 <body ng-app="app" ng-controller="MainController">
