@@ -53,7 +53,7 @@ public class App {
     @Scheduled(fixedRate = 2000)
     @SendToUser("/greetings")
     public String greeting1() {
-        messagingTemplate.convertAndSendToUser("2", "/greetings", "我是卖报的小行家");
+        messagingTemplate.convertAndSendToUser("2", "/greetings", "欢迎您，用户: 2");
         return "OK";
     }
 
