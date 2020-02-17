@@ -4,41 +4,41 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <title>websocket</title>
-    <script src="https://cdn.bootcss.com/angular.js/1.5.6/angular.min.js"></script>
     <script src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js"></script>
     <script src="https://cdn.bootcss.com/stomp.js/2.3.3/stomp.min.js"></script>
-    <script type="text/javascript">
-        var stompClient = null;
+</head>
+<body>
+<div id="app">
+    <div>WebSocket连接状态:{{ connected }}</div>
+    <div>
+        <button type="button" :disabled="connected" @click="connect()">连接</button>
+        <button type="button" @click="disconnect()" :disabled="!connected">断开</button>
+    </div>
 
-        var app = angular.module('app', []);
-        app.controller('MainController', function ($rootScope, $scope, $http) {
-
-            $scope.data = {
-                //连接状态
-                connected: false,
-                //消息
-                message: '',
-                rows: [],
-                lala: []
-            };
-
-            //连接
-            $scope.connect = function () {
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            stompClient: '',
+            // 连接状态
+            connected: false,
+        },
+        methods: {
+            connect() {
                 var socket = new SockJS('/my-websocket');
                 stompClient = Stomp.over(socket);
                 stompClient.connect({}, function (frame) {
                     // 注册推送时间回调
-                    stompClient.subscribe('/topic/notification', function (r) {
-                        $scope.data.body = r.body;
-                        $scope.data.connected = true;
-                        $scope.$apply();
-
+                    stompClient.subscribe('/topic/notification', function (response) {
+                        app.connected = true;
                         // 弹窗
                         if (window.Notification) {
                             var popNotice = function () {
                                 if (Notification.permission == "granted") {
                                     var notification = new Notification("Hi，跟你打招呼呢，看着没？：", {
-                                        body: r.body,
+                                        body: response.body,
                                         icon: 'https://gttx-pc.oss-cn-beijing.aliyuncs.com/6c603870330d68c8765cc19edaa78dda.jpg'
                                     });
 
@@ -62,23 +62,18 @@
                         }
                     });
 
-                    $scope.data.connected = true;
-                    $scope.$apply();
+                    app.connected = true;
                 });
-            };
-
-            $scope.disconnect = function () {
+            },
+            disconnect() {
                 if (stompClient != null) {
                     stompClient.disconnect();
                 }
-                $scope.data.connected = false;
+
+                app.connected = false;
             }
-        });
-    </script>
-</head>
-<body ng-app="app" ng-controller="MainController">
-<label>WebSocket连接状态:</label>
-<button type="button" ng-disabled="data.connected" ng-click="connect()">连接</button>
-<button type="button" ng-click="disconnect()" ng-disabled="!data.connected">断开</button>
+        }
+    })
+</script>
 </body>
 </html>
