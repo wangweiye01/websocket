@@ -9,6 +9,7 @@
 </head>
 <body>
 <div id="app">
+    <div>服务器推送，客户端显示Notification</div>
     <div>WebSocket连接状态:{{ connected }}</div>
     <div>
         <button type="button" :disabled="connected" @click="connect()">连接</button>
