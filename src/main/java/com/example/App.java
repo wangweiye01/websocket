@@ -33,41 +33,29 @@ public class App {
         return "index";
     }
 
-    /*@MessageMapping("/send")
-    @SendTo("/topic/send")
-    public SocketMessage send(SocketMessage message) throws Exception {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        message.date = df.format(new Date());
-        return message;
-    }*/
-
     @Scheduled(fixedRate = 1000)
-    @SendTo("/topic/callback")
-    public Object callback() throws Exception {
+    public Object time() throws Exception {
         // 发现消息
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        messagingTemplate.convertAndSend("/topic/callback", df.format(new Date()));
-        return "callback";
+        messagingTemplate.convertAndSend("/topic/time", df.format(new Date()));
+        return "time";
+    }
+
+    @Scheduled(fixedRate = 2000)
+    @SendToUser("/greetings")
+    public String greeting2() {
+        messagingTemplate.convertAndSendToUser("2", "/greetings", "欢迎您，用户: 2");
+        return "OK";
     }
 
     @Scheduled(fixedRate = 2000)
     @SendToUser("/greetings")
     public String greeting1() {
-        messagingTemplate.convertAndSendToUser("2", "/greetings", "欢迎您，用户: 2");
+        messagingTemplate.convertAndSendToUser("1", "/greetings", "欢迎您，用户: 1");
         return "OK";
     }
 
-    @MessageMapping("/send")
-    @SendToUser("/greetings")
-    public SocketMessage greeting(SocketMessage message) {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        message.date = df.format(new Date());
-        messagingTemplate.convertAndSendToUser("1", "/greetings", message);
-        return message;
-    }
-
     @Scheduled(fixedRate = 9000)
-    @SendTo("/topic/notification")
     public Object notification() {
         // 发现消息
         messagingTemplate.convertAndSend("/topic/notification", "hello world!");

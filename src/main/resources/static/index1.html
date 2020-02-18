@@ -50,7 +50,7 @@
                 stompClient = Stomp.over(socket);
                 stompClient.connect({}, function (frame) {
                     // 注册发送消息
-                    stompClient.subscribe('/user/2/greetings', function (msg) {
+                    stompClient.subscribe('/user/1/greetings', function (msg) {
                         app.lala.push(msg);
                     });
                     // 注册推送时间回调
